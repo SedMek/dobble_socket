@@ -122,6 +122,10 @@ class Game {
 			player.socket.emit("result", { result: player.id == winningPlayerId ? 1 : -1 });
 		}
 	}
+
+	removePlayerById(playerId) {
+		removeByAttr(this.playerList, "id", playerId);
+	}
 }
 
 // Player lass
@@ -168,6 +172,15 @@ class Player {
 }
 
 // utils
+var removeByAttr = function (arr, attr, value) {
+	var i = arr.length;
+	while (i--) {
+		if (arr[i] && arr[i].hasOwnProperty(attr) && arguments.length > 2 && arr[i][attr] === value) {
+			arr.splice(i, 1);
+		}
+	}
+	return arr;
+};
 
 function shuffle(array) {
 	var currentIndex = array.length,
@@ -228,6 +241,7 @@ io.on("connection", (socket) => {
 	// player disconnected
 	socket.on("disconnect", () => {
 		console.log("Client disconnected: " + socket.id);
+		game.removePlayerById(socket.id);
 	});
 	// player choice
 	socket.on("choose", (data) => {
