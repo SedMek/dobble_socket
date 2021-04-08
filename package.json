@@ -1,0 +1,17 @@
+{
+	"name": "dooble_socket",
+	"version": "1.0.0",
+	"description": "socket server for dooble game",
+	"main": "app.js",
+	"scripts": {
+		"start": "nodemon start",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Seddik",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.17.1",
+		"nodemon": "^2.0.7",
+		"socket.io": "^4.0.1"
+	}
+}
