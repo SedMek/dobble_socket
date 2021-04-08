@@ -19,7 +19,7 @@ class Game {
 		this.io = io;
 		this.playerList = [];
 		this.start = 0;
-		this.deck = createDeck();
+		this.deck = [];
 		this.status = "waiting";
 		this.cardOnTop = [];
 	}
@@ -34,6 +34,7 @@ class Game {
 	startGame() {
 		this.startDate = new Date().getTime();
 		this.status = "inProgress";
+		this.deck = createDeck();
 		this._distributeDeck();
 
 		console.log(`distributing cards`);
