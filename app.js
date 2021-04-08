@@ -242,6 +242,8 @@ io.on("connection", (socket) => {
 	socket.on("disconnect", () => {
 		console.log("Client disconnected: " + socket.id);
 		game.removePlayerById(socket.id);
+		// If the game is in progress, restart it
+		game.startGame();
 	});
 	// player choice
 	socket.on("choose", (data) => {
