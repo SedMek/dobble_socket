@@ -41,7 +41,7 @@ class Game {
 		for (player of this.playerList) {
 			player.emitCard();
 		}
-
+		this.emitStart();
 		this.emitCard();
 	}
 
@@ -56,6 +56,11 @@ class Game {
 	emitCard() {
 		console.log("emitting game card");
 		this.io.emit("gameCard", { card: this.cardOnTop });
+	}
+
+	emitStart() {
+		console.log("emitting start game");
+		this.io.emit("result", { result: 0 });
 	}
 
 	handlePlayerChoice(playerId, symbolId, card) {
@@ -76,7 +81,7 @@ class Game {
 
 			// check if player won
 			if (this.isOver()) {
-				this.announceResults(player.id);
+				this.emitResults(player.id);
 			} else {
 				// update player top card
 				player.emitCard();
@@ -116,7 +121,7 @@ class Game {
 		return false;
 	}
 
-	announceResults(winningPlayerId) {
+	emitResults(winningPlayerId) {
 		// We use winningPlayerId here to prevent having more than 1 winner
 		for (player of this.playerList) {
 			player.socket.emit("result", { result: player.id == winningPlayerId ? 1 : -1 });
