@@ -33,7 +33,7 @@ class Game {
 
 	startGame() {
 		this.startDate = new Date().getTime();
-		this.status = "inProgress";
+		this.status = "progressing";
 		this.deck = createDeck();
 		this._distributeDeck();
 
@@ -41,6 +41,7 @@ class Game {
 		for (player of this.playerList) {
 			player.emitCard();
 		}
+		console.log(this);
 		this.emitStart();
 		this.emitCard();
 	}
@@ -60,7 +61,7 @@ class Game {
 
 	emitStart() {
 		console.log("emitting start game");
-		this.io.emit("result", { result: 0 });
+		this.io.emit("status", { status: this.status });
 	}
 
 	handlePlayerChoice(playerId, symbolId, card) {
@@ -124,7 +125,7 @@ class Game {
 	emitResults(winningPlayerId) {
 		// We use winningPlayerId here to prevent having more than 1 winner
 		for (player of this.playerList) {
-			player.socket.emit("result", { result: player.id == winningPlayerId ? 1 : -1 });
+			player.socket.emit("status", { status: player.id == winningPlayerId ? "winning" : "losing" });
 		}
 	}
 
@@ -151,6 +152,7 @@ class Player {
 
 	resetBan() {
 		this.banLevel = 0;
+		this.banDate = 0;
 	}
 
 	ban() {
@@ -159,7 +161,7 @@ class Player {
 		console.log(`player ${this.name} received a ban of ${this.banLevel}ms`);
 
 		//emit ban
-		this.socket.emit("ban", { banEndDate: this.banDate + this.banLevel });
+		this.socket.emit("ban", { duration: this.banLevel });
 	}
 
 	isBanned() {
@@ -247,10 +249,12 @@ io.on("connection", (socket) => {
 	socket.on("disconnect", () => {
 		console.log("Client disconnected: " + socket.id);
 		game.removePlayerById(socket.id);
-		// If the game is in progress, restart it
-		if (game.status == "inProgress") {
-			game.startGame();
-		}
+		game.status = "waiting";
+		// If the game is in progress and playerList not empty, restart it
+		// if (game.status == "progressing" && game.playerList.length > 0) {
+		// 	console.log("that's what I'm talking about");
+		// 	game.startGame();
+		// }
 	});
 	// player choice
 	socket.on("choose", (data) => {
